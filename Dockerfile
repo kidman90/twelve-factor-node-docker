@@ -1,7 +1,7 @@
-FROM node:latest
-WORKDIR /app
-COPY package*.json /app
-RUN npm install
-COPY . /app
-CMD node express.js
+FROM mhart/alpine-node
+WORKDIR /srv
+COPY . .
+RUN mkdir uploads
+RUN yarn
 EXPOSE 8080
+CMD node express.js

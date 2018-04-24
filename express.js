@@ -1,22 +1,33 @@
 const path = require('path');
 const express = require('express');
-const proxy = require('express-http-proxy');
-const baseImageUrl = process.env.BASE_IMAGE_URL;
-const proxyBaseImageUrl = baseImageUrl
-  ? proxy(baseImageUrl, {
-    proxyReqPathResolver: function (req) {
-      const newPath = baseImageUrl + req.path;
-      console.log(newPath);
-      return newPath;
-    }
-  })
-  : express.static(path.join(__dirname, 'public/images'));
+const fileUpload = require('express-fileupload');
 const app = express();
 
-app.use('/images', proxyBaseImageUrl);
+app.use(fileUpload());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.get('/', function (req, res) {
-  res.send('<h1>can i haz hug</h1><img src="images/herman.jpg" />')
+app.get('/', (req, res) => {
+  res.send(`
+    <form action="/upload" enctype="multipart/form-data" method="post">
+      <input type="file" name="foo" /><br /><br />
+      <input type="submit" value="Upload" />
+    </form>
+  `);
 });
 
-app.listen(8080, () => console.log('Web server running on port 8080'));
+app.post('/upload', (req, res) => {
+  if (!req.files) return res.status(400).send('No files were uploaded!');
+
+  const { foo } = req.files;
+  const uploadTo = `uploads/${foo.name}`;
+
+  foo.mv(uploadTo, (err) => {
+    if (err) return res.status(500).send(err);
+
+    res.send(`File uploaded to <a href="${uploadTo}">${uploadTo}</a>`);
+  });
+});
+
+app.listen(8080, () => {
+  console.log('Server listening on port 8080!');
+});
