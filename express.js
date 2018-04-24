@@ -15,4 +15,8 @@ const app = express();
 
 app.use('/images', proxyBaseImageUrl);
 
-app.listen(8080);
+app.get('/', function (req, res) {
+  res.send('<h1>can i haz hug</h1><img src="images/herman.jpg" />')
+});
+
+app.listen(8080, () => console.log('Web server running on port 8080'));
