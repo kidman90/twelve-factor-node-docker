@@ -1,11 +1,14 @@
-require('dotenv').config();
+// Load the http module to create an http server.
+var http = require('http');
 
-var MongoClient = require('mongodb').MongoClient;
-
-MongoClient.connect(process.env.MONGO_URI, function (err, db) {
-  if (err) {
-    console.log('Cannot connect to MongoDB!', err);
-  } else {
-    console.log('Connected to MongoDB!');
-  }
+// Configure our HTTP server to respond with Hello World to all requests.
+var server = http.createServer(function (request, response) {
+  response.writeHead(200, {"Content-Type": "text/plain"});
+  response.end("Hello World\n");
 });
+
+// Listen on port 8000, IP defaults to 127.0.0.1
+server.listen(8000);
+
+// Put a friendly message on the terminal
+console.log("Server running at http://127.0.0.1:8000/");
