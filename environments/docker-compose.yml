@@ -1,0 +1,7 @@
+version: '3'
+services:
+  app:
+    build: .
+    image: helloworld2
+    env_file:
+      .env
